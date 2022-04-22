@@ -1,7 +1,9 @@
 package com.blog.myBlogApp.controller;
 
 import com.blog.myBlogApp.payload.PostDTO;
+import com.blog.myBlogApp.payload.PostResponse;
 import com.blog.myBlogApp.service.PostService;
+import com.blog.myBlogApp.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,15 @@ public class PostController {
 
 
     @GetMapping
-    public ResponseEntity<List<PostDTO>> getPosts(){
-        return new ResponseEntity<>(postService.getPosts(), HttpStatus.OK);
+    public ResponseEntity<PostResponse> getPosts(
+            @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+
+
+    ){
+        return new ResponseEntity<>(postService.getPosts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
     @GetMapping("/{postId}")
