@@ -3,7 +3,7 @@ package com.blog.myBlogApp.service;
 import com.blog.myBlogApp.payload.PostDTO;
 import com.blog.myBlogApp.payload.PostResponse;
 
-import java.util.List;
+
 
 
 public interface PostService {
