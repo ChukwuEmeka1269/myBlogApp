@@ -1,5 +1,6 @@
 package com.blog.myBlogApp.controller;
 
+import com.blog.myBlogApp.payload.ApiOpResponse;
 import com.blog.myBlogApp.payload.PostDTO;
 import com.blog.myBlogApp.payload.PostResponse;
 import com.blog.myBlogApp.service.PostService;
@@ -32,9 +33,7 @@ public class PostController {
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
-
-
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ){
         return new ResponseEntity<>(postService.getPosts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
@@ -50,9 +49,11 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable Long postId){
+    public ResponseEntity<ApiOpResponse> deletePost(@PathVariable Long postId){
+        ApiOpResponse apiOpResponse = new ApiOpResponse();
+        apiOpResponse.setMessage("Post has been deleted successfully.");
         postService.deletePost(postId);
-        return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
+        return  new ResponseEntity<>(apiOpResponse, HttpStatus.OK);
     }
 
 }
