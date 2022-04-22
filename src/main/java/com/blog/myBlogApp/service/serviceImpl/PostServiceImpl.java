@@ -3,8 +3,13 @@ package com.blog.myBlogApp.service.serviceImpl;
 import com.blog.myBlogApp.exception.ResourceNotFoundException;
 import com.blog.myBlogApp.model.Post;
 import com.blog.myBlogApp.payload.PostDTO;
+import com.blog.myBlogApp.payload.PostResponse;
 import com.blog.myBlogApp.repository.PostRepository;
 import com.blog.myBlogApp.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,13 +26,35 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO createPost(PostDTO postDTO) {
         Post post = mapPostDTOToPost(postDTO);
+        postRepository.save(post);
         return mapPostToPostDTO(post);
     }
 
     @Override
-    public List<PostDTO> getPosts() {
-        List<Post> allPost = postRepository.findAll();
-        return allPost.stream().map(this::mapPostToPostDTO).collect(Collectors.toList());
+    public PostResponse getPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortDir).ascending()
+                : Sort.by(sortDir).descending();
+
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Post> postPages = postRepository.findAll(pageable);
+
+        List<Post> pageContent = postPages.getContent();
+
+        List<PostDTO> content = pageContent.stream().map(this::mapPostToPostDTO).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContents(content);
+        postResponse.setPageNo(postPages.getNumber());
+        postResponse.setPageSize(postPages.getSize());
+        postResponse.setTotalElements(postPages.getTotalElements());
+        postResponse.setTotalPages(postPages.getTotalPages());
+        postResponse.setLast(postPages.isLast());
+
+        return postResponse;
+
     }
 
     @Override
