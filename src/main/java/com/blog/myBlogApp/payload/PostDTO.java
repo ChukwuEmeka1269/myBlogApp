@@ -2,6 +2,8 @@ package com.blog.myBlogApp.payload;
 
 import lombok.*;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -12,4 +14,5 @@ public class PostDTO {
     private String title;
     private String description;
     private String content;
+    private Set<CommentDTO> comments;
 }
