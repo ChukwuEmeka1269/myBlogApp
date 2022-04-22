@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -46,14 +47,21 @@ public class CommentController {
     }
 
     @DeleteMapping("/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<String> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId){
+    public ResponseEntity<ApiOpResponse> deletePostComment(@PathVariable Long postId, @PathVariable Long commentId){
+        ApiOpResponse apiOpResponse = new ApiOpResponse();
+        apiOpResponse.setMessage("Comment has been deleted successfully.");
+
         commentService.deletePostComment(postId, commentId);
-        return ResponseEntity.ok("Comment deleted.");
+        return  new ResponseEntity<>(apiOpResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/posts/{postId}/comments")
-    public ResponseEntity<String> deleteAllPostComment(@PathVariable Long postId){
+    public ResponseEntity<ApiOpResponse> deleteAllPostComment(@PathVariable Long postId){
+        ApiOpResponse apiOpResponse = new ApiOpResponse();
+        apiOpResponse.setMessage("All Comment has been deleted successfully.");
+
         commentService.deleteAllPostComment(postId);
-        return ResponseEntity.ok("All post comment deleted.");
+
+        return new ResponseEntity<>(apiOpResponse, HttpStatus.OK);
     }
 }
