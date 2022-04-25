@@ -11,11 +11,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 
 @Configuration
 @EnableWebSecurity
@@ -51,12 +49,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    //    @Override
-//    @Bean
-//    protected UserDetailsService userDetailsService() {
-//        UserDetails emeka = User.builder().username("Emeka").password(passwordEncoder.encode("pass")).roles("USER").build();
-//        UserDetails admin = User.builder().username("Admin").password(passwordEncoder.encode("admin")).roles("ADMIN").build();
-//
-//        return new InMemoryUserDetailsManager(emeka, admin);
-//    }
 }
