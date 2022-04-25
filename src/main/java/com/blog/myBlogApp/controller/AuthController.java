@@ -3,10 +3,12 @@ package com.blog.myBlogApp.controller;
 import com.blog.myBlogApp.model.BlogUser;
 import com.blog.myBlogApp.model.Role;
 import com.blog.myBlogApp.payload.ApiOpResponse;
+import com.blog.myBlogApp.payload.JwtAuthResponse;
 import com.blog.myBlogApp.payload.LoginDTO;
 import com.blog.myBlogApp.payload.SignupDTO;
 import com.blog.myBlogApp.repository.BlogUserRepository;
 import com.blog.myBlogApp.repository.RoleRepository;
+import com.blog.myBlogApp.security.JwtTokenProvider;
 import com.blog.myBlogApp.utils.AppConstants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +45,20 @@ public class AuthController {
     @Autowired
     private RoleRepository roleRepository;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiOpResponse> login(@RequestBody LoginDTO loginDTO){
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        ApiOpResponse message = new ApiOpResponse();
-        message.setMessage(AppConstants.SUCCESSFUL_LOGIN_MESSAGE);
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO loginDTO){
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getUsernameOrEmail(),
+                        loginDTO.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        String token = tokenProvider.generateToken(authenticate);
+
+        return ResponseEntity.ok(new JwtAuthResponse(token));
     }
 
 
