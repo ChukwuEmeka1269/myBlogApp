@@ -9,7 +9,8 @@ public class AppConstants {
     /*    Api Response  */
 
     public static final String SUCCESSFUL_LOGIN_MESSAGE = "Login successful";
-    public static final String USER_ALREADY_EXIST_MESSAGE = "User already taken";
+    public static final String SUCCESSFUL_SIGNUP_MESSAGE = "Registration successful";
+    public static final String USER_ALREADY_EXIST_MESSAGE = "User already exist";
     public static final String EMAIL_ALREADY_EXIST_MESSAGE = "Email already taken";
 
     /*   Delete Messages */

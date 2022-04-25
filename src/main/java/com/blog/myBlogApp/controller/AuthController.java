@@ -1,10 +1,14 @@
 package com.blog.myBlogApp.controller;
 
 import com.blog.myBlogApp.model.BlogUser;
+import com.blog.myBlogApp.model.Role;
 import com.blog.myBlogApp.payload.ApiOpResponse;
+import com.blog.myBlogApp.payload.JwtAuthResponse;
 import com.blog.myBlogApp.payload.LoginDTO;
 import com.blog.myBlogApp.payload.SignupDTO;
 import com.blog.myBlogApp.repository.BlogUserRepository;
+import com.blog.myBlogApp.repository.RoleRepository;
+import com.blog.myBlogApp.security.JwtTokenProvider;
 import com.blog.myBlogApp.utils.AppConstants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,14 +42,23 @@ public class AuthController {
     @Autowired
     private PasswordEncoder encoder;
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiOpResponse> login(@RequestBody LoginDTO loginDTO){
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        ApiOpResponse message = new ApiOpResponse();
-        message.setMessage(AppConstants.SUCCESSFUL_LOGIN_MESSAGE);
+    @Autowired
+    private RoleRepository roleRepository;
 
-        return new ResponseEntity<>(message, HttpStatus.OK);
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO loginDTO){
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getUsernameOrEmail(),
+                        loginDTO.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        String token = tokenProvider.generateToken(authenticate);
+
+        return ResponseEntity.ok(new JwtAuthResponse(token));
     }
 
 
@@ -60,12 +75,12 @@ public class AuthController {
             message.setMessage(AppConstants.EMAIL_ALREADY_EXIST_MESSAGE);
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-        
         BlogUser blogUser = new BlogUser();
         mapper.map(signupDTO, blogUser);
         blogUser.setPassword(encoder.encode(signupDTO.getPassword()));
+        blogUser.setRoles(Collections.singleton(roleRepository.findByName("ROLE_ADMIN").orElseThrow()));
         userRepository.save(blogUser);
-
+        message.setMessage(AppConstants.SUCCESSFUL_SIGNUP_MESSAGE);
         return new ResponseEntity<>(message, HttpStatus.OK);
 
     }
