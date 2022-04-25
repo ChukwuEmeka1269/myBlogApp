@@ -8,7 +8,10 @@ import com.blog.myBlogApp.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 
 @RestController
@@ -22,8 +25,9 @@ public class PostController {
         this.postService = postService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO){
+    public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO){
         return new ResponseEntity<>(postService.createPost(postDTO), HttpStatus.CREATED);
     }
 
@@ -43,17 +47,28 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostById(postId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{postId}")
-    public ResponseEntity<PostDTO> editPost(@PathVariable Long postId, @RequestBody PostDTO postDTO){
+    public ResponseEntity<PostDTO> editPost(@PathVariable Long postId, @Valid @RequestBody PostDTO postDTO){
         return new ResponseEntity<>(postService.updatePost(postDTO, postId), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiOpResponse> deletePost(@PathVariable Long postId){
         ApiOpResponse apiOpResponse = new ApiOpResponse();
-        apiOpResponse.setMessage("Post has been deleted successfully.");
+        apiOpResponse.setMessage(AppConstants.DELETE_POST_MESSAGE);
         postService.deletePost(postId);
         return  new ResponseEntity<>(apiOpResponse, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping
+    public ResponseEntity<ApiOpResponse> deleteAllPost(){
+        postService.deletePosts();
+        ApiOpResponse message = new ApiOpResponse();
+        message.setMessage(AppConstants.DELETE_ALL_POST_MESSAGE);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
 }

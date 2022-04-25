@@ -85,6 +85,11 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
+    @Override
+    public void deletePosts() {
+        postRepository.deleteAll();
+    }
+
 
     private PostDTO mapPostToPostDTO(Post post){
         return modelMapper.map(post, PostDTO.class);
