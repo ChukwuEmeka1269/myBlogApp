@@ -2,6 +2,7 @@ package com.blog.myBlogApp.controller;
 
 import com.blog.myBlogApp.payload.ApiOpResponse;
 import com.blog.myBlogApp.payload.PostDTO;
+import com.blog.myBlogApp.payload.PostDTOV2;
 import com.blog.myBlogApp.payload.PostResponse;
 import com.blog.myBlogApp.service.PostService;
 import com.blog.myBlogApp.utils.AppConstants;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 
+
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping()
 public class PostController {
 
     private final PostService postService;
@@ -26,13 +28,13 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping
+    @PostMapping("/api/v1/posts")
     public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO){
         return new ResponseEntity<>(postService.createPost(postDTO), HttpStatus.CREATED);
     }
 
 
-    @GetMapping
+    @GetMapping("/api/v1/posts")
     public ResponseEntity<PostResponse> getPosts(
             @RequestParam(value = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
@@ -42,19 +44,20 @@ public class PostController {
         return new ResponseEntity<>(postService.getPosts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<PostDTO> getPostById(@PathVariable Long postId){
+    @GetMapping("/api/v1/posts/{postId}")
+    public ResponseEntity<PostDTO> getPostByIdV1(@PathVariable Long postId){
         return ResponseEntity.ok(postService.getPostById(postId));
     }
 
+
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{postId}")
+    @PutMapping("/api/v1/{postId}")
     public ResponseEntity<PostDTO> editPost(@PathVariable Long postId, @Valid @RequestBody PostDTO postDTO){
         return new ResponseEntity<>(postService.updatePost(postDTO, postId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/api/v1/posts/{postId}")
     public ResponseEntity<ApiOpResponse> deletePost(@PathVariable Long postId){
         ApiOpResponse apiOpResponse = new ApiOpResponse();
         apiOpResponse.setMessage(AppConstants.DELETE_POST_MESSAGE);
@@ -63,7 +66,7 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping
+    @DeleteMapping("/api/v1/posts")
     public ResponseEntity<ApiOpResponse> deleteAllPost(){
         postService.deletePosts();
         ApiOpResponse message = new ApiOpResponse();
