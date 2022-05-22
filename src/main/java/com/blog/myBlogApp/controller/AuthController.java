@@ -10,6 +10,10 @@ import com.blog.myBlogApp.repository.BlogUserRepository;
 import com.blog.myBlogApp.repository.RoleRepository;
 import com.blog.myBlogApp.security.JwtTokenProvider;
 import com.blog.myBlogApp.utils.AppConstants;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 
+@Api(value = "Auth Controller for Sign in and Register REST APIs")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -48,6 +53,7 @@ public class AuthController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
+    @ApiOperation(value = "REST API for sign in operation")
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDTO loginDTO){
         Authentication authenticate = authenticationManager.authenticate(
@@ -62,6 +68,7 @@ public class AuthController {
     }
 
 
+    @ApiOperation(value = "REST API for sign up operation")
     @PostMapping("/signup")
     public ResponseEntity<ApiOpResponse> signup(@RequestBody SignupDTO signupDTO){
         ApiOpResponse message = new ApiOpResponse();
